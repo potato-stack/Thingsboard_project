@@ -5,7 +5,7 @@ import json
 
 BROKER_ADDRESS = "thingsboard.cloud"
 PORT = 1883
-THINGS_BOARD_ACCESS_TOKEN = "U4ugcpWt538wp5AwVGJ0"
+THINGS_BOARD_ACCESS_TOKEN = "PkSXWNyACzrxEtvM9Blv"
 
 
 def subscribed(client, userdata, mid, granted_qos):
@@ -60,7 +60,7 @@ while f:
             # "FLOW": "",
             "TSS": "",
             # "TEMP": "",
-            "Temp": "",
+            "temperature": "",
             "COD": "",
             "CLO": "",
             "SS": "",
@@ -85,8 +85,8 @@ while f:
                 entry_dict["pH"] = t1[1]
             elif t1[0] == "FLOW":
                 entry_dict["Flow"] = t1[1]
-            elif t1[0] == "TEMP":
-                entry_dict["Temp"] = t1[1]
+            elif t1[0] == "TEMP" or t1[0] == "Temp":
+                entry_dict["temperature"] = t1[1]
             else:
                 entry_dict[t1[0]] = t1[1]
         else:
@@ -100,8 +100,8 @@ while f:
 
     # m+="}"
     print(json.dumps(entry_dict))
-    client.publish('v1/devices/me/telemetry', json.dumps(entry_dict), 1)
-    time.sleep(10)
+    client.publish('esp/telemetry', json.dumps(entry_dict), 1)
+    time.sleep(5)
 
 
 
