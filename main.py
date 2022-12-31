@@ -2,6 +2,7 @@
 import paho.mqtt.client as mqttclient
 import time
 import json
+import sys
 
 BROKER_ADDRESS = "thingsboard.cloud"
 PORT = 1883
@@ -10,16 +11,22 @@ THINGS_BOARD_ACCESS_TOKEN = "PkSXWNyACzrxEtvM9Blv"
 
 def subscribed(client, userdata, mid, granted_qos):
     print("Subscribed...")
+    temp_data = {'test': True}
+    client.publish('v1/devices/me/attributes', json.dumps(temp_data), 1)
 
 
 def recv_message(client, userdata, message):
     print("Received: ", message.payload.decode("utf-8"))
-    temp_data = {'value': True}
+    temp_data = {'value': "On"}
     try:
         jsonobj = json.loads(message.payload)
-        if jsonobj['method'] == "setValue":
-            temp_data['value'] = jsonobj['params']
+        if jsonobj['method'] == "Set sensor" and jsonobj['params'] == "On":
+            temp_data['value'] = "On"
             client.publish('v1/devices/me/attributes', json.dumps(temp_data), 1)
+        elif jsonobj['method'] == "Set sensor" and jsonobj['params'] == "Off":
+            temp_data['value'] = "Off"
+            client.publish('v1/devices/me/attributes', json.dumps(temp_data), 1)
+
     except:
         pass
 
@@ -41,7 +48,7 @@ client.loop_start()
 client.on_subscribe = subscribed
 client.on_message = recv_message
 
-f = open("./data/tram_1.txt", "r")
+f = open(r'C:\Users\hatru\OneDrive\Desktop\data\tram_1.txt','r')
 while f:
     data = f.readline().replace('\n', '')
     t = data.split(";")
@@ -100,9 +107,5 @@ while f:
 
     # m+="}"
     print(json.dumps(entry_dict))
-    client.publish('esp/telemetry', json.dumps(entry_dict), 1)
+    client.publish('v1/devices/me/telemetry', json.dumps(entry_dict), 1)
     time.sleep(5)
-
-
-
-
