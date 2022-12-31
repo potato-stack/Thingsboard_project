@@ -9,6 +9,7 @@ PORT = 1883
 THINGS_BOARD_ACCESS_TOKEN = "PkSXWNyACzrxEtvM9Blv"
 state = "On"
 
+
 def subscribed(client, userdata, mid, granted_qos):
     print("Subscribed...")
     temp_data = {'value': 'On','active': 'true'}
@@ -52,7 +53,7 @@ client.loop_start()
 client.on_subscribe = subscribed
 client.on_message = recv_message
 
-f = open(r'C:\Users\hatru\OneDrive\Desktop\data\tram_1.txt','r')
+f = open("./data/tram_1.txt", "r")
 while f:
     if state == "On":
         data = f.readline().replace('\n', '')
@@ -109,7 +110,6 @@ while f:
                 #     m = m + '"Date": '
                 # m += '"' + t1[0] + '"'
                     entry_dict["Date"] = t1[0]
-
         # m+="}"
         print(json.dumps(entry_dict))
         client.publish('v1/devices/me/telemetry', json.dumps(entry_dict), 1)
